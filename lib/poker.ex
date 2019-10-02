@@ -45,19 +45,22 @@ defmodule Poker do
     end)
   end
 
-  def check_type(%{suites: suites, vals: values}) do
+  def get_type_and_values(%{suites: suites, vals: values}) do
     suit_count = suites |> Enum.uniq() |> Enum.count()
     value_count = values |> Enum.uniq() |> Enum.count()
 
-    case {suit_count, value_count} do
-      {1, 5} -> {:ok, "straight flush"}
-      {_, 2} -> confirm_type(2, values)
-      {1, _} -> {:ok, "flush"}
-      {_, 5} -> {:ok, "straight"}
-      {_, 3} -> confirm_type(3, values)
-      {_, 4} -> {:ok, "pair"}
-      _ -> {:ok, "High Card"}
-    end
+    type =
+      case {suit_count, value_count} do
+        {1, 5} -> {:ok, "straight flush"}
+        {_, 2} -> confirm_type(2, values)
+        {1, _} -> {:ok, "flush"}
+        {_, 5} -> {:ok, "straight"}
+        {_, 3} -> confirm_type(3, values)
+        {_, 4} -> {:ok, "pair"}
+        _ -> {:ok, "High Card"}
+      end
+
+    %{type: type, values: values}
   end
 
   def confirm_type(2, values) do
@@ -79,16 +82,24 @@ defmodule Poker do
   end
 
   def compare_hands(hand1, hand2) do
-    hand1_highest = get_highest(hand1)
-    hand2_highest = get_highest(hand2)
+    hand1_type_and_vals = get_highest(hand1)
+    hand2_type_and_vals = get_highest(hand2)
 
-    if hand1_highest == hand2_highest do
+    case hand1_type_and_vals.type do
+      hand2_type_and_vals.type ->
+        run_highest_card_check(hand1_type_and_vals.values, hand2_type_and_vals.values)
+
+      _ ->
+        run_type_funnel(hand1_type_and_vals, hand2_type_and_vals)
     end
+
+    IO.inspect(hand1_highest)
+    IO.inspect(hand2_highest)
   end
 
   def get_highest(hand) do
     hand
     |> get_suites_and_vals
-    |> check_type
+    |> get_type_and_values
   end
 end
