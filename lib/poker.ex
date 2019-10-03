@@ -3,7 +3,7 @@ defmodule Poker do
   Documentation for Poker.
   """
 
-  @type_mappings %{
+  @val_ranking %{
     "2" => 0,
     "3" => 1,
     "4" => 2,
@@ -19,14 +19,16 @@ defmodule Poker do
     "A" => 12
   }
 
-  def check_high_card(poker_hand) do
-  end
-
-  def check_pair(poker_hand) do
-  end
-
-  def check_two_pairs(poker_hand) do
-  end
+  @hand_ranking %{
+    "high card" => 0,
+    "pair" => 1,
+    "two pairs" => 2,
+    "three of a kind" => 3,
+    "straight" => 4,
+    "flush" => 5,
+    "full house" => 6,
+    "four of a kind" => 7
+  }
 
   def check_three_of_a_kind(occurences) do
     if Enum.member?(occurences, 1) do
@@ -34,15 +36,6 @@ defmodule Poker do
     else
       {:ok, "three of a kind"}
     end
-  end
-
-  def check_straight(poker_hand) do
-  end
-
-  def check_flush(poker_hand) do
-  end
-
-  def check_full_house(poker_hand) do
   end
 
   def check_four_of_a_kind(occurences) do
@@ -73,7 +66,7 @@ defmodule Poker do
         {_, 5} -> {:ok, "straight"}
         {_, 3} -> confirm_type(3, values)
         {_, 4} -> {:ok, "pair"}
-        _ -> {:ok, "High Card"}
+        _ -> {:ok, "high card"}
       end
 
     %{type: type, values: values}
@@ -102,20 +95,42 @@ defmodule Poker do
     hand2_type_and_vals = get_highest(hand2)
     hand1_type = hand1_type_and_vals.type
     hand2_type = hand2_type_and_vals.type
+    IO.inspect(hand1_type)
+    IO.inspect(hand2_type)
 
     return_val =
-      case(hand1_type) do
+      case hand1_type do
         hand2_type ->
           run_highest_card_check(hand1_type_and_vals.values, hand2_type_and_vals.values)
 
         _ ->
-          run_type_funnel(hand1_type_and_vals, hand2_type_and_vals)
+          run_type_funnel(hand1_type_and_vals.type, hand2_type_and_vals.type)
       end
 
     return_val
+    |> formatOutput
   end
 
-  def run_type_funnel(hand1, hand2) do
+  def formatOutput(%{hand1: value}) do
+    "Black wins - #{value}"
+  end
+
+  def formatOutput(%{hand2: value}) do
+    "White wins - #{value}"
+  end
+
+  def formatOutput(_) do
+    "Tie"
+  end
+
+  def run_type_funnel({:ok, hand1_type}, {:ok, hand2_type}) do
+    IO.puts("Run type funnel")
+
+    cond do
+      @hand_ranking[hand1_type] > @hand_ranking[hand1_type] -> %{hand1: hand1_type}
+      @hand_ranking[hand2_type] > @hand_ranking[hand2_type] -> %{hand2: hand2_type}
+      true -> %{}
+    end
   end
 
   def run_highest_card_check(hand1_vals, hand2_vals) do
@@ -125,10 +140,10 @@ defmodule Poker do
       current_val_hand2 = hand2_vals |> Enum.at(x)
 
       cond do
-        @type_mappings[current_val_hand1] > @type_mappings[current_val_hand2] ->
+        @val_ranking[current_val_hand1] > @val_ranking[current_val_hand2] ->
           {:halt, acc |> Map.put_new(:hand1, current_val_hand1)}
 
-        @type_mappings[current_val_hand2] > @type_mappings[current_val_hand1] ->
+        @val_ranking[current_val_hand2] > @val_ranking[current_val_hand1] ->
           {:halt, acc |> Map.put_new(:hand1, current_val_hand1)}
 
         true ->
