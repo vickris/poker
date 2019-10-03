@@ -60,7 +60,7 @@ defmodule Poker do
 
     type =
       case {suit_count, value_count} do
-        {1, 5} -> {:ok, "straight flush"}
+        {1, 5} -> confirm_type(5, values)
         {_, 2} -> confirm_type(2, values)
         {1, _} -> {:ok, "flush"}
         {_, 5} -> {:ok, "straight"}
@@ -84,6 +84,25 @@ defmodule Poker do
     |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
     |> Map.values()
     |> check_three_of_a_kind
+  end
+
+  def confirm_type(5, values) do
+    incrementing_count =
+      1..4
+      |> Enum.reduce_while(0, fn index, acc ->
+        current = @val_ranking[Enum.at(values, index)]
+        previous = @val_ranking[Enum.at(values, index - 1)]
+
+        if previous > current, do: {:cont, acc + 1}, else: {:halt, acc}
+      end)
+
+    case incrementing_count do
+      4 -> {:ok, "straight flush"}
+      _ -> {:ok, "flush"}
+    end
+  end
+
+  def check_straight_flush do
   end
 
   def separate_values_from_suits([val, suit], acc) do
