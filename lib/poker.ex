@@ -114,16 +114,14 @@ defmodule Poker do
     hand2_type_and_vals = get_highest(hand2)
     hand1_type = hand1_type_and_vals.type
     hand2_type = hand2_type_and_vals.type
-    IO.inspect(hand1_type)
-    IO.inspect(hand2_type)
 
     return_val =
-      case hand1_type do
-        hand2_type ->
+      cond do
+        hand1_type == hand2_type ->
           run_highest_card_check(hand1_type_and_vals.values, hand2_type_and_vals.values)
 
-        _ ->
-          run_type_funnel(hand1_type_and_vals.type, hand2_type_and_vals.type)
+        true ->
+          run_type_funnel(hand1_type, hand2_type)
       end
 
     return_val
@@ -143,11 +141,9 @@ defmodule Poker do
   end
 
   def run_type_funnel({:ok, hand1_type}, {:ok, hand2_type}) do
-    IO.puts("Run type funnel")
-
     cond do
-      @hand_ranking[hand1_type] > @hand_ranking[hand1_type] -> %{hand1: hand1_type}
-      @hand_ranking[hand2_type] > @hand_ranking[hand2_type] -> %{hand2: hand2_type}
+      @hand_ranking[hand1_type] > @hand_ranking[hand2_type] -> %{hand1: hand1_type}
+      @hand_ranking[hand2_type] > @hand_ranking[hand1_type] -> %{hand2: hand2_type}
       true -> %{}
     end
   end
@@ -163,7 +159,7 @@ defmodule Poker do
           {:halt, acc |> Map.put_new(:hand1, current_val_hand1)}
 
         @val_ranking[current_val_hand2] > @val_ranking[current_val_hand1] ->
-          {:halt, acc |> Map.put_new(:hand1, current_val_hand1)}
+          {:halt, acc |> Map.put_new(:hand2, current_val_hand2)}
 
         true ->
           {:cont, acc}
