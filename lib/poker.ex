@@ -3,6 +3,22 @@ defmodule Poker do
   Documentation for Poker.
   """
 
+  @type_mappings %{
+    "2" => 0,
+    "3" => 1,
+    "4" => 2,
+    "5" => 3,
+    "6" => 4,
+    "7" => 5,
+    "8" => 6,
+    "9" => 7,
+    "T" => 8,
+    "J" => 9,
+    "Q" => 10,
+    "K" => 11,
+    "A" => 12
+  }
+
   def check_high_card(poker_hand) do
   end
 
@@ -84,17 +100,41 @@ defmodule Poker do
   def compare_hands(hand1, hand2) do
     hand1_type_and_vals = get_highest(hand1)
     hand2_type_and_vals = get_highest(hand2)
+    hand1_type = hand1_type_and_vals.type
+    hand2_type = hand2_type_and_vals.type
 
-    case hand1_type_and_vals.type do
-      hand2_type_and_vals.type ->
-        run_highest_card_check(hand1_type_and_vals.values, hand2_type_and_vals.values)
+    return_val =
+      case(hand1_type) do
+        hand2_type ->
+          run_highest_card_check(hand1_type_and_vals.values, hand2_type_and_vals.values)
 
-      _ ->
-        run_type_funnel(hand1_type_and_vals, hand2_type_and_vals)
-    end
+        _ ->
+          run_type_funnel(hand1_type_and_vals, hand2_type_and_vals)
+      end
 
-    IO.inspect(hand1_highest)
-    IO.inspect(hand2_highest)
+    return_val
+  end
+
+  def run_type_funnel(hand1, hand2) do
+  end
+
+  def run_highest_card_check(hand1_vals, hand2_vals) do
+    0..4
+    |> Enum.reduce_while(%{}, fn x, acc ->
+      current_val_hand1 = hand1_vals |> Enum.at(x)
+      current_val_hand2 = hand2_vals |> Enum.at(x)
+
+      cond do
+        @type_mappings[current_val_hand1] > @type_mappings[current_val_hand2] ->
+          {:halt, acc |> Map.put_new(:hand1, current_val_hand1)}
+
+        @type_mappings[current_val_hand2] > @type_mappings[current_val_hand1] ->
+          {:halt, acc |> Map.put_new(:hand1, current_val_hand1)}
+
+        true ->
+          {:cont, acc}
+      end
+    end)
   end
 
   def get_highest(hand) do
