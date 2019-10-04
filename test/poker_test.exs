@@ -44,7 +44,7 @@ defmodule PokerTest do
 
   describe "flush" do
     test "ranked using highest card" do
-      assert Poker.compare_hands("2H 3H 4H 9H KH", "2H 4H 3H 8H AH") == "White wins - A"
+      assert Poker.compare_hands("2H 4H 8H 9H KH", "2H 4H 6H 9H AH") == "White wins - A"
     end
 
     test "wins over pair" do
@@ -66,6 +66,21 @@ defmodule PokerTest do
   describe "full house" do
     test "ranked using val of the 3 cards" do
       assert Poker.compare_hands("4H 4D 4S 5C 5D", "3C 3H 3S 4C 4H") == "Black wins - 4"
+    end
+
+    test "full house wins over flush" do
+      assert Poker.compare_hands("2H 4H 3H 8H AH", "3C 3H 3S 4C 4H") == "White wins - full house"
+    end
+  end
+
+  describe "straight flush" do
+    test "ranked by highest card" do
+      assert Poker.compare_hands("4D 5D 6D 7D KD", "4D 5D 6D 7D AD") == "White wins - A"
+    end
+
+    test "wins over full house" do
+      assert Poker.compare_hands("4D 5D 6D 7D KD", "3C 3H 3S 4C 4H") ==
+               "Black wins - straight flush"
     end
   end
 end
