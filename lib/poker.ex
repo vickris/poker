@@ -145,84 +145,39 @@ defmodule Poker do
     end
   end
 
-  def highest_card_three_of_a_kind(hand1, hand2) do
+  def compare_pairs_raw(hand1, hand2, key1, key2) do
     hand1_mappings =
       hand1
       |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
-      |> Enum.reduce(%{1 => [], 3 => []}, fn {val, count}, acc ->
+      |> Enum.reduce(%{key1 => [], key2 => []}, fn {val, count}, acc ->
         Map.put(acc, count, [val | acc[count]])
       end)
 
     hand2_mappings =
       hand2
       |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
-      |> Enum.reduce(%{1 => [], 3 => []}, fn {val, count}, acc ->
+      |> Enum.reduce(%{key1 => [], key2 => []}, fn {val, count}, acc ->
         Map.put(acc, count, [val | acc[count]])
       end)
 
-    return_val =
-      hand1_mappings
-      |> compare_pairs(hand2_mappings)
+    hand1_mappings
+    |> compare_pairs(hand2_mappings)
+  end
+
+  def highest_card_three_of_a_kind(hand1, hand2) do
+    compare_pairs_raw(hand1, hand2, 1, 3)
   end
 
   def highest_card_four_of_a_kind(hand1, hand2) do
-    hand1_mappings =
-      hand1
-      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
-      |> Enum.reduce(%{1 => [], 4 => []}, fn {val, count}, acc ->
-        Map.put(acc, count, [val | acc[count]])
-      end)
-
-    hand2_mappings =
-      hand2
-      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
-      |> Enum.reduce(%{1 => [], 4 => []}, fn {val, count}, acc ->
-        Map.put(acc, count, [val | acc[count]])
-      end)
-
-    return_val =
-      hand1_mappings
-      |> compare_pairs(hand2_mappings)
+    compare_pairs_raw(hand1, hand2, 1, 4)
   end
 
   def highest_card_full_house(hand1, hand2) do
-    hand1_mappings =
-      hand1
-      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
-      |> Enum.reduce(%{2 => [], 3 => []}, fn {val, count}, acc ->
-        Map.put(acc, count, [val | acc[count]])
-      end)
-
-    hand2_mappings =
-      hand2
-      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
-      |> Enum.reduce(%{2 => [], 3 => []}, fn {val, count}, acc ->
-        Map.put(acc, count, [val | acc[count]])
-      end)
-
-    return_val =
-      hand1_mappings
-      |> compare_pairs(hand2_mappings)
+    compare_pairs_raw(hand1, hand2, 2, 3)
   end
 
   def highest_pair(hand1, hand2) do
-    hand1_mappings =
-      hand1
-      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
-      |> Enum.reduce(%{1 => [], 2 => []}, fn {val, count}, acc ->
-        Map.put(acc, count, [val | acc[count]])
-      end)
-
-    hand2_mappings =
-      hand2
-      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
-      |> Enum.reduce(%{1 => [], 2 => []}, fn {val, count}, acc ->
-        Map.put(acc, count, [val | acc[count]])
-      end)
-
-    return_val =
-      hand1_mappings
-      |> compare_pairs(hand2_mappings)
+    compare_pairs_raw(hand1, hand2, 1, 2)
   end
 
   def get_highest_hand(hand1, hand2, "pair") do
