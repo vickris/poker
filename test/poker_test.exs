@@ -26,5 +26,17 @@ defmodule PokerTest do
     test "with same highest pair ranked by second highest pair" do
       assert Poker.compare_hands("2H 2D 4S 4C KD", "3C 3H 4S 4C AH") == "White wins - 3"
     end
+
+    test "with same pairs ranked by remaining vals" do
+      assert Poker.compare_hands("2H 2D 4S 4C KD", "2C 2H 4S 4C AH") == "White wins - A"
+    end
+  end
+
+  test "three of a kind" do
+    assert Poker.compare_hands("4H 4D 4S 5C KD", "3C 3H 3S 4C AH") == "Black wins - 4"
+  end
+
+  test "straight" do
+    assert Poker.compare_hands("2C 3H 4S 8C AH", "2C 3H 4S 8C KH") == "Black wins - A"
   end
 end

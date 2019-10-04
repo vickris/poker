@@ -31,10 +31,10 @@ defmodule Poker do
   }
 
   def check_three_of_a_kind(occurences) do
-    if Enum.member?(occurences, 1) do
-      {:ok, "two pairs"}
-    else
+    if Enum.member?(occurences, 3) do
       {:ok, "three of a kind"}
+    else
+      {:ok, "two pairs"}
     end
   end
 
@@ -145,6 +145,26 @@ defmodule Poker do
     end
   end
 
+  def highest_card(hand1, hand2) do
+    hand1_mappings =
+      hand1
+      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
+      |> Enum.reduce(%{1 => [], 3 => []}, fn {val, count}, acc ->
+        Map.put(acc, count, [val | acc[count]])
+      end)
+
+    hand2_mappings =
+      hand2
+      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
+      |> Enum.reduce(%{1 => [], 3 => []}, fn {val, count}, acc ->
+        Map.put(acc, count, [val | acc[count]])
+      end)
+
+    return_val =
+      hand1_mappings
+      |> compare_pairs(hand2_mappings)
+  end
+
   def highest_pair(hand1, hand2) do
     hand1_mappings =
       hand1
@@ -171,6 +191,10 @@ defmodule Poker do
 
   def get_highest_hand(hand1, hand2, "two pairs") do
     highest_pair(hand1, hand2)
+  end
+
+  def get_highest_hand(hand1, hand2, "three of a kind") do
+    highest_card(hand1, hand2)
   end
 
   def compare_pairs(hand1_mappings, hand2_mappings) do
@@ -219,6 +243,8 @@ defmodule Poker do
     case type do
       {:ok, "pair"} -> get_highest_hand(hand1_vals, hand2_vals, "pair")
       {:ok, "two pairs"} -> get_highest_hand(hand1_vals, hand2_vals, "two pairs")
+      {:ok, "three of a kind"} -> get_highest_hand(hand1_vals, hand2_vals, "three of a kind")
+      _ -> get_highest_card(hand1_vals, hand2_vals)
     end
   end
 
