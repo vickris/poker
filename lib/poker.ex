@@ -145,7 +145,7 @@ defmodule Poker do
     end
   end
 
-  def highest_card(hand1, hand2) do
+  def highest_card_three_of_a_kind(hand1, hand2) do
     hand1_mappings =
       hand1
       |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
@@ -157,6 +157,26 @@ defmodule Poker do
       hand2
       |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
       |> Enum.reduce(%{1 => [], 3 => []}, fn {val, count}, acc ->
+        Map.put(acc, count, [val | acc[count]])
+      end)
+
+    return_val =
+      hand1_mappings
+      |> compare_pairs(hand2_mappings)
+  end
+
+  def highest_card_four_of_a_kind(hand1, hand2) do
+    hand1_mappings =
+      hand1
+      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
+      |> Enum.reduce(%{1 => [], 4 => []}, fn {val, count}, acc ->
+        Map.put(acc, count, [val | acc[count]])
+      end)
+
+    hand2_mappings =
+      hand2
+      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
+      |> Enum.reduce(%{1 => [], 4 => []}, fn {val, count}, acc ->
         Map.put(acc, count, [val | acc[count]])
       end)
 
@@ -194,7 +214,11 @@ defmodule Poker do
   end
 
   def get_highest_hand(hand1, hand2, "three of a kind") do
-    highest_card(hand1, hand2)
+    highest_card_three_of_a_kind(hand1, hand2)
+  end
+
+  def get_highest_hand(hand1, hand2, "four of a kind") do
+    highest_card_four_of_a_kind(hand1, hand2)
   end
 
   def compare_pairs(hand1_mappings, hand2_mappings) do
@@ -244,6 +268,7 @@ defmodule Poker do
       {:ok, "pair"} -> get_highest_hand(hand1_vals, hand2_vals, "pair")
       {:ok, "two pairs"} -> get_highest_hand(hand1_vals, hand2_vals, "two pairs")
       {:ok, "three of a kind"} -> get_highest_hand(hand1_vals, hand2_vals, "three of a kind")
+      {:ok, "four of a kind"} -> get_highest_hand(hand1_vals, hand2_vals, "four of a kind")
       _ -> get_highest_card(hand1_vals, hand2_vals)
     end
   end
