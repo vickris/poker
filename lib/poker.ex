@@ -93,7 +93,7 @@ defmodule Poker do
         current = @val_ranking[Enum.at(values, index)]
         previous = @val_ranking[Enum.at(values, index - 1)]
 
-        if previous > current, do: {:cont, acc + 1}, else: {:halt, acc}
+        if previous > current && previous - current == 1, do: {:cont, acc + 1}, else: {:halt, acc}
       end)
 
     case incrementing_count do

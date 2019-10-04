@@ -6,6 +6,12 @@ defmodule PokerTest do
     assert Poker.compare_hands("2H 3D 5S 9C KD", "2C 3H 4S 8C AH") == "White wins - A"
   end
 
+  describe "pair" do
+    test "highest pair wins" do
+      assert Poker.compare_hands("2H 3D 3S 9C KD", "2C 4H 4S 8C AH") == "White wins - 4"
+    end
+  end
+
   test "highest pair wins" do
     assert Poker.compare_hands("2H 3D 3S 9C KD", "2C 4H 4S 8C AH") == "White wins - 4"
   end
@@ -79,7 +85,7 @@ defmodule PokerTest do
     end
 
     test "wins over full house" do
-      assert Poker.compare_hands("4D 5D 6D 7D KD", "3C 3H 3S 4C 4H") ==
+      assert Poker.compare_hands("4D 5D 6D 7D 8D", "3C 3H 3S 4C 4H") ==
                "Black wins - straight flush"
     end
   end
