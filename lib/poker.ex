@@ -102,9 +102,6 @@ defmodule Poker do
     end
   end
 
-  def check_straight_flush do
-  end
-
   def separate_values_from_suits([val, suit], acc) do
     %{acc | suites: [suit | acc.suites], vals: [val | acc.vals]}
   end
@@ -148,7 +145,7 @@ defmodule Poker do
     end
   end
 
-  def get_highest_hand(hand1, hand2, "pair") do
+  def highest_pair(hand1, hand2) do
     hand1_mappings =
       hand1
       |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
@@ -166,6 +163,14 @@ defmodule Poker do
     return_val =
       hand1_mappings
       |> compare_pairs(hand2_mappings)
+  end
+
+  def get_highest_hand(hand1, hand2, "pair") do
+    highest_pair(hand1, hand2)
+  end
+
+  def get_highest_hand(hand1, hand2, "two pairs") do
+    highest_pair(hand1, hand2)
   end
 
   def compare_pairs(hand1_mappings, hand2_mappings) do
@@ -213,6 +218,7 @@ defmodule Poker do
 
     case type do
       {:ok, "pair"} -> get_highest_hand(hand1_vals, hand2_vals, "pair")
+      {:ok, "two pairs"} -> get_highest_hand(hand1_vals, hand2_vals, "two pairs")
     end
   end
 
