@@ -1,21 +1,22 @@
 # Poker
 
-**TODO: Add description**
+**TODO: Decide winner according to poker rules**
 
-## Installation
+## Testing
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `poker` to your list of dependencies in `mix.exs`:
+From the shell:
+```
+Poker.compare_hands(hand1_values, hand2_values)
 
-```elixir
-def deps do
-  [
-    {:poker, "~> 0.1.0"}
-  ]
-end
+#Example
+>> Poker.compare_hands("2H 3D 3S 9C KD", "2H 4H 3H 8H AH")
+>> "White wins - flush"
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/poker](https://hexdocs.pm/poker).
+To run tests:
+```
+mix test test/poker_test.exs
+```
+
+
 
