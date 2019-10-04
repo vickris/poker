@@ -118,7 +118,7 @@ defmodule Poker do
     return_val =
       cond do
         hand1_type == hand2_type ->
-          run_highest_card_check(hand1_type_and_vals.values, hand2_type_and_vals.values)
+          run_highest_card_check(hand1_type_and_vals, hand2_type_and_vals)
 
         true ->
           run_type_funnel(hand1_type, hand2_type)
@@ -148,11 +148,44 @@ defmodule Poker do
     end
   end
 
-  def run_highest_card_check(hand1_vals, hand2_vals) do
-    0..4
+  def get_highest_hand(hand1, hand2, "pair") do
+    hand1_mappings =
+      hand1
+      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
+      |> Enum.reduce(%{1 => [], 2 => []}, fn {val, count}, acc ->
+        Map.put(acc, count, [val | acc[count]])
+      end)
+
+    hand2_mappings =
+      hand2
+      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
+      |> Enum.reduce(%{1 => [], 2 => []}, fn {val, count}, acc ->
+        Map.put(acc, count, [val | acc[count]])
+      end)
+
+    hand1_mappings
+    |> compare_pairs(hand2_mappings)
+    |> Enum.reverse()
+    |> hd
+  end
+
+  def compare_pairs(hand1_mappings, hand2_mappings) do
+    hand1_mappings
+    |> Enum.map(fn {k, values} ->
+      cond do
+        k == 2 -> get_highest_card(hand1_mappings[k], hand2_mappings[k])
+        k == 1 -> get_highest_card(hand1_mappings[k], hand2_mappings[k])
+      end
+    end)
+  end
+
+  def get_highest_card(hand1, hand2) do
+    last_index = Enum.count(hand1) - 1
+
+    0..last_index
     |> Enum.reduce_while(%{}, fn x, acc ->
-      current_val_hand1 = hand1_vals |> Enum.at(x)
-      current_val_hand2 = hand2_vals |> Enum.at(x)
+      current_val_hand1 = hand1 |> Enum.at(x)
+      current_val_hand2 = hand2 |> Enum.at(x)
 
       cond do
         @val_ranking[current_val_hand1] > @val_ranking[current_val_hand2] ->
@@ -165,6 +198,16 @@ defmodule Poker do
           {:cont, acc}
       end
     end)
+  end
+
+  def run_highest_card_check(hand1, hand2) do
+    hand1_vals = hand1.values
+    hand2_vals = hand2.values
+    type = hand1.type
+
+    case type do
+      {:ok, "pair"} -> get_highest_hand(hand1_vals, hand2_vals, "pair")
+    end
   end
 
   def get_highest(hand) do
