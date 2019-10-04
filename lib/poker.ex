@@ -163,18 +163,24 @@ defmodule Poker do
         Map.put(acc, count, [val | acc[count]])
       end)
 
-    hand1_mappings
-    |> compare_pairs(hand2_mappings)
-    |> Enum.reverse()
-    |> hd
+    return_val =
+      hand1_mappings
+      |> compare_pairs(hand2_mappings)
   end
 
   def compare_pairs(hand1_mappings, hand2_mappings) do
     hand1_mappings
-    |> Enum.map(fn {k, values} ->
-      cond do
-        k == 2 -> get_highest_card(hand1_mappings[k], hand2_mappings[k])
-        k == 1 -> get_highest_card(hand1_mappings[k], hand2_mappings[k])
+    |> Enum.reverse()
+    |> Enum.reduce_while(%{}, fn {k, _values}, acc ->
+      hand_and_card = get_highest_card(hand1_mappings[k], hand2_mappings[k])
+      key_count = hand_and_card |> Map.keys() |> Enum.count()
+
+      if key_count == 0 do
+        {:cont, acc}
+      else
+        {:halt,
+         acc
+         |> Map.put_new(hand_and_card |> Map.keys() |> hd, hand_and_card |> Map.values() |> hd)}
       end
     end)
   end
