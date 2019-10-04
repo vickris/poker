@@ -56,5 +56,16 @@ defmodule PokerTest do
     test "ranked using val of 4 cards" do
       assert Poker.compare_hands("2H 2D 2S 2C KD", "3H 3H 3H 3H AH") == "White wins - 3"
     end
+
+    test "wins over pair" do
+      assert Poker.compare_hands("2H 2D 2S 2C KD", "2H 4H 3H 8H AH") ==
+               "Black wins - four of a kind"
+    end
+  end
+
+  describe "full house" do
+    test "ranked using val of the 3 cards" do
+      assert Poker.compare_hands("4H 4D 4S 5C 5D", "3C 3H 3S 4C 4H") == "Black wins - 4"
+    end
   end
 end
