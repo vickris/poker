@@ -6,7 +6,7 @@
 
 From the shell:
 ```
-Poker.compare_hands(hand1_values, hand2_values)
+Poker.compare_hands(black, white)
 
 #Example
 >> Poker.compare_hands("2H 3D 3S 9C KD", "2H 4H 3H 8H AH")
