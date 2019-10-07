@@ -106,7 +106,34 @@ defmodule Poker do
     %{acc | suites: [suit | acc.suites], vals: [val | acc.vals]}
   end
 
+  def validate_input(%{hand1: hand1, hand2: hand2}) do
+    hand1_card_count = hand1 |> String.split() |> Enum.count()
+    hand2_card_count = hand2 |> String.split() |> Enum.count()
+
+    cond do
+      hand1_card_count != 5 ->
+        {:error, "Black Poker hand needs to have 5 cards for scoring purposes"}
+
+      hand2_card_count != 5 ->
+        {:error, "Whhite poker hand needs to have 5 cards for scoring purposes"}
+
+      true ->
+        {:ok, %{hand1: hand1, hand2: hand2}}
+    end
+  end
+
   def compare_hands(hand1, hand2) do
+    validated_input =
+      %{hand1: hand1, hand2: hand2}
+      |> validate_input
+
+    case validated_input do
+      {:error, msg} -> msg
+      _ -> continue_comparison(hand1, hand2)
+    end
+  end
+
+  def continue_comparison(hand1, hand2) do
     hand1_type_and_vals = get_highest(hand1)
     hand2_type_and_vals = get_highest(hand2)
     hand1_type = hand1_type_and_vals.type
