@@ -115,7 +115,7 @@ defmodule Poker do
         {:error, "Black Poker hand needs to have 5 cards for scoring purposes"}
 
       hand2_card_count != 5 ->
-        {:error, "Whhite poker hand needs to have 5 cards for scoring purposes"}
+        {:error, "White poker hand needs to have 5 cards for scoring purposes"}
 
       true ->
         {:ok, %{hand1: hand1, hand2: hand2}}

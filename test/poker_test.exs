@@ -109,4 +109,14 @@ defmodule PokerTest do
                "Black wins - straight flush"
     end
   end
+
+  test "Black hand needs 5 cards" do
+    assert Poker.compare_hands("4D 5D 6D 7D", "4D 5D 6D 7D AD") ==
+             "Black Poker hand needs to have 5 cards for scoring purposes"
+  end
+
+  test "White hand needs 5 cards" do
+    assert Poker.compare_hands("4D 5D 6D 7D 8D", "4D 5D 6D 7D") ==
+             "White poker hand needs to have 5 cards for scoring purposes"
+  end
 end
